@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.datastore</groupId>
 	<artifactId>datastore</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.6</version>
 	<name>DataStore</name>
 	<description>DataStore</description>
 	<properties>
@@ -27,6 +27,15 @@
 <!--			<version>6.3.0.Final</version>-->
 <!--			<type>pom</type>-->
 <!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+			<version>3.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>

@@ -2,15 +2,8 @@ FROM ubuntu
 MAINTAINER shiva
 RUN apt-get update -y
 RUN apt-get install -y openjdk-11-jdk
-RUN mkdir -p /app/source
-COPY ./ /app/source
 WORKDIR /app/source
+COPY . .
 RUN ./mvnw package
-ARG JAR_FILE=./target/*.jar
-COPY ${JAR_FILE} app.jar
+RUN mv ./target/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
-
-172.17.0.4  ->  c1
-172.17.0.2  ->  c2
-172.18.0.2  ->  c3

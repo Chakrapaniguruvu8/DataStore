@@ -14,3 +14,6 @@ docker tag datastore:1.0 8072388539/datastore:v1.0
 docker push 8072388539/datastore:v1.0
 
 sed -i "" "s/nginx:1.1/busybox:1.2/" test
+
+069601001222
+ICIC0000696
