@@ -6,15 +6,20 @@ pipeline {
   }
 
   environment {
-    DOCKERHUB_CREDENTIALS=credentials("dockerhub")
+    DOCKERHUB_CREDENTIALS = credentials("dockerhub")
   }
 
   stages {
+
     stage("Checkout") {
       steps {
-        checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Chakrapaniguruvu8/DataStore.git']])
+        checkout scmGit(
+          branches: [[name: '*/master']],
+          userRemoteConfigs: [[url: 'https://github.com/Chakrapaniguruvu8/DataStore.git']]
+        )
       }
     }
+
     stage("Maven Build") {
       steps {
         sh """
@@ -24,6 +29,7 @@ pipeline {
         """
       }
     }
+
     stage("Maven Test") {
       steps {
         sh """
@@ -33,6 +39,7 @@ pipeline {
         """
       }
     }
+
     stage("Artifact Store") {
       steps {
         sh """
@@ -42,46 +49,51 @@ pipeline {
         """
       }
     }
+
     stage("Docker Image Build") {
       steps {
         sh """
           echo "-------- Building Docker Image --------"
-          docker build -t datastore:"${App_Version}" .
+          docker build -t datastore:${params.App_Version} .
           echo "-------- Image Successfully Built --------"
         """
       }
     }
+
     stage("Docker Image Scan") {
       steps {
         sh """
           echo "-------- Scanning Docker Image --------"
-          trivy image datastore:"${App_Version}"
+          trivy image datastore:${params.App_Version}
           echo "-------- Scanning Docker Image Complete --------"
         """
       }
     }
+
     stage("Docker Image Tag") {
-      steps{
+      steps {
         sh """
           echo "-------- Tagging Docker Image --------"
-          docker tag datastore:"${App_Version}" chakrapaniguruvu8/datastore:"${App_Version}"
-          echo "-------- Tagging Docker Image Completed."
+          docker tag datastore:${params.App_Version} chakrapaniguruvu8/datastore:${params.App_Version}
+          echo "-------- Tagging Docker Image Completed --------"
         """
       }
     }
+
     stage("Loggingin & Pushing Docker Image") {
       steps {
         sh """
           echo "-------- Logging To DockerHub --------"
-          docker login -u $DOCKERHUB_CREDENTIALS_USR --password $DOCKERHUB_CREDENTIALS_PSW
+          docker login -u $DOCKERHUB_CREDENTIALS_USR -p $DOCKERHUB_CREDENTIALS_PSW
           echo "-------- DockerHub Login Successful --------"
 
           echo "-------- Pushing Docker Image To DockerHub --------"
-         docker push chakrapaniguruvu8/datastore:"${App_Version}"
+          docker push chakrapaniguruvu8/datastore:${params.App_Version}
           echo "-------- Docker Image Pushed Successfully --------"
         """
       }
     }
+
     stage("Cleanup") {
       steps {
         sh """
@@ -91,17 +103,24 @@ pipeline {
         """
       }
     }
+
     stage("Deployment Acceptance") {
       steps {
         input 'Trigger Down Stream Job??'
       }
     }
+
     stage("Triggering Deployment") {
       steps {
-        build job: "KubernetesDeployment", parameters: [string(name: "App_Name", value: "datastore-deploy"), string(name: "App_Version", value: "${params.App_Version}")]
+        build job: "KubernetesDeployment",
+        parameters: [
+          string(name: "App_Name", value: "datastore"),
+          string(name: "App_Version", value: "${params.App_Version}")
+        ]
       }
     }
   }
+
   post {
     success {
         slackSend(
@@ -138,4 +157,5 @@ pipeline {
             tokenCredentialId: 'slack-notify'
         )
     }
+  }
 }
