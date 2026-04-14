@@ -44,7 +44,7 @@ pipeline {
       steps {
         sh """
           echo "-------- Pushing Artifacts To S3 --------"
-          aws s3 cp ./target/*.jar s3://s3-bucket-for-datadftore-jenkins-artifactory/
+          aws s3 cp ./target/*.jar s3://jenkinspipeline999/
           echo "-------- Pushing Artifacts To S3 Completed --------"
         """
       }
@@ -74,7 +74,7 @@ pipeline {
       steps {
         sh """
           echo "-------- Tagging Docker Image --------"
-          docker tag datastore:${params.App_Version} chakrapaniguruvu8/datastore:${params.App_Version}
+          docker tag datastore:${params.App_Version} chakrapaniguruvu8/datahard:${params.App_Version}
           echo "-------- Tagging Docker Image Completed --------"
         """
       }
@@ -88,7 +88,7 @@ pipeline {
           echo "-------- DockerHub Login Successful --------"
 
           echo "-------- Pushing Docker Image To DockerHub --------"
-          docker push chakrapaniguruvu8/datastore:${params.App_Version}
+          docker push chakrapaniguruvu8/datahard:${params.App_Version}
           echo "-------- Docker Image Pushed Successfully --------"
         """
       }
