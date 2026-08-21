@@ -2,6 +2,9 @@ FROM amazoncorretto:11-alpine-jdk
 MAINTAINER shiva
 WORKDIR /app/source
 COPY . .
-RUN ./mvnw package
+RUN ./mvnw clean package -Dspring.profiles.active=build
 RUN mv ./target/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+#RUN apk add --no-cache curl
+#HEALTHCHECK --interval=20s --timeout=3s \
+#  CMD curl -f http://localhost:8082/actuator/health || exit 1
+CMD ["java", "-jar", "app.jar"]
